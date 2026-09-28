@@ -30,11 +30,13 @@ vi.mock('hooks/api/useClusterName.ts', () => ({
   useClusterName: () => 'main',
 }));
 
+let mockCreatingBackup = false;
+
 vi.mock('hooks/api/backups/useBackups.ts', () => ({
   useBackupsList: () => ({ data: [] }),
   useCreateBackupOnDemand: () => ({
     mutate: mockCreateBackup,
-    isPending: false,
+    isPending: mockCreatingBackup,
   }),
   getBackupListQueryKey: () => ['backups'],
 }));
@@ -143,6 +145,7 @@ describe('OnDemandBackupModal', () => {
     vi.clearAllMocks();
     mockLoadingStorages = false;
     mockLoadingClasses = false;
+    mockCreatingBackup = false;
     queryClient.clear();
   });
 
@@ -182,5 +185,13 @@ describe('OnDemandBackupModal', () => {
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
     expect(screen.queryByText('Fields')).not.toBeInTheDocument();
+  });
+
+  it('disables Create button and shows loading state while create request is pending', async () => {
+    mockCreatingBackup = true;
+    renderModal();
+
+    const submitButton = screen.getByRole('button', { name: /create/i });
+    expect(submitButton).toBeDisabled();
   });
 });

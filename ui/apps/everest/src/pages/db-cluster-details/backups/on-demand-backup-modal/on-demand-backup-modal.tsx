@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { enqueueSnackbar } from 'notistack';
 import { FormDialog } from 'components/form-dialog';
+import { Messages } from './on-demand-backup-modal.messages.ts';
 import {
   getBackupListQueryKey,
   useBackupsList,
@@ -121,6 +123,7 @@ export const OnDemandBackupModal = () => {
       } as unknown as CreateBackupPayload,
       {
         onSuccess() {
+          enqueueSnackbar(Messages.success, { variant: 'success' });
           queryClient.invalidateQueries({
             queryKey: getBackupListQueryKey(
               clusterName,
